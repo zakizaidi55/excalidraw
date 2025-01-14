@@ -14,6 +14,12 @@ wss.on('connection', function connection(ws, request) {
     const queryParams = new URLSearchParams(url.split('?')[1]);
     const token = queryParams.get('token') ?? "";
     const decoded = jsonwebtoken_1.default.verify(token, config_1.JWT_SECRET);
+
+    if(typeof decoded === "string"){
+        ws.close();
+        return;  
+    }
+
     if (!decoded || (!decoded).userId) {
         ws.close();
         return;
