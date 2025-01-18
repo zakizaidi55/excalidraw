@@ -2,9 +2,6 @@
   "name": "@repo/common",
   "version": "1.0.0",
   "main": "index.js",
-  
-  "type": "module",
-  
   "exports": {
     "./types" : "./src/types.ts"
   },
