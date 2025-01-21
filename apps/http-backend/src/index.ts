@@ -142,11 +142,11 @@ app.get("/room/:slug", async (req, res) => {
     } catch(error) {
         console.log("error in slug");
         res.status(411).json({
-            error
+            message:"error while getting room id"
         })
     }
 
 })
-app.listen(3001);
+app.listen(3002);
 
 
