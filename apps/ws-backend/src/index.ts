@@ -24,12 +24,10 @@ function checkUser(token: string): string | null {
     if (!decoded || !decoded.userId) {
       return null;
     }
-
     return decoded.userId;
   } catch(e) {
     return null;
   }
-  return null;
 }
 
 wss.on('connection', function connection(ws, request) {
@@ -53,6 +51,8 @@ wss.on('connection', function connection(ws, request) {
   })
 
   ws.on('message', async function message(data) {
+    console.log("message recived")
+    console.log(message)
     let parsedData;
     if (typeof data !== "string") {
       parsedData = JSON.parse(data.toString());
@@ -95,7 +95,9 @@ wss.on('connection', function connection(ws, request) {
             type: "chat",
             message: message,
             roomId
-          }))
+          } )
+        )
+
         }
       })
     }

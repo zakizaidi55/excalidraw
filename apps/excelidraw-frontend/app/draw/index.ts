@@ -1,4 +1,4 @@
-"use client"
+
 import axios from "axios";
 import { HTTP_BACKEND } from "../config";
 
@@ -15,13 +15,24 @@ type Shape = {
     radius:number,
 }
 
-export async function initDraw(canvas:HTMLCanvasElement,roomId:string) {
+export async function initDraw(canvas:HTMLCanvasElement,roomId:string, socket:WebSocket) {
     const ctx = canvas.getContext("2d");
 
     let existingShape : Shape[] = await getExistingShapes(roomId);
 
     if(!ctx)
         return
+
+
+    socket.onmessage = (event) => {
+        const message = JSON.parse(event.data);
+
+        if(message.type === "chat" ) {
+            const parsedShape = JSON.parse(message.message);
+            existingShape.push(parsedShape.shape);
+            clearCanvas(existingShape, canvas, ctx);
+        }
+    }
 
     clearCanvas(existingShape, canvas, ctx);
 
@@ -39,13 +50,23 @@ export async function initDraw(canvas:HTMLCanvasElement,roomId:string) {
         clicked = false;
         const width = e.clientX - startX;
         const height = e.clientY - startY;
-        existingShape.push({
-            type:"rect",
-            x:startX,
-            y:startY,
-            height,
-            width
-        })
+
+        const shape : Shape = {
+                        type:"rect",
+                        x:startX,
+                        y:startY,
+                        height,
+                        width
+                    }
+        existingShape.push(shape)
+
+        socket.send(JSON.stringify({
+            type:"chat",
+            message: JSON.stringify({
+                shape
+            }),
+            roomId
+        }))
     })
 
     canvas.addEventListener("mousemove", (e) => {
@@ -78,7 +99,7 @@ async function getExistingShapes(roomId: string) {
 
     const shapes = messages.map((x :{message:string}) => {
         const messageData = JSON.parse(x.message);
-        return messageData;
+        return messageData.shape;
     })
 
     return shapes;

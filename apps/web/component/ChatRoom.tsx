@@ -10,7 +10,7 @@ async function getChats(roomId: string) {
     return response.data.messages;
 }
 
-//@ts-ignore
+
 export default async function ChatRoom({id}: {
     id:string
 }) {
